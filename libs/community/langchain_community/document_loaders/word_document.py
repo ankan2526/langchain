@@ -1,10 +1,8 @@
 """Loads word documents."""
-
 import os
 import tempfile
 from abc import ABC
-from pathlib import Path
-from typing import List, Union
+from typing import List
 from urllib.parse import urlparse
 
 import requests
@@ -21,9 +19,10 @@ class Docx2txtLoader(BaseLoader, ABC):
     to a temporary file, and use that, then clean up the temporary file after completion
     """
 
-    def __init__(self, file_path: Union[str, Path]):
+    def __init__(self, file_path: str):
         """Initialize with file path."""
-        self.file_path = str(file_path)
+        self.original_file_path = file_path
+        self.file_path = file_path
         if "~" in self.file_path:
             self.file_path = os.path.expanduser(self.file_path)
 
@@ -55,7 +54,7 @@ class Docx2txtLoader(BaseLoader, ABC):
         return [
             Document(
                 page_content=docx2txt.process(self.file_path),
-                metadata={"source": self.file_path},
+                metadata={"source": self.original_file_path},
             )
         ]
 
